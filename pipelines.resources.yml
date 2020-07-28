@@ -1,6 +1,0 @@
-resources:
-  - name: myAppRepo
-    type: GitRepo
-    configuration:
-      gitProvider: vinay_github               # Change to your integration
-      path: vinayagg/jfrogPipelinesSteps      # Change to your repo
