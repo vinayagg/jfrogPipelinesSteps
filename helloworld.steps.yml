@@ -9,7 +9,7 @@ pipelines:
         type: Bash
         configuration:
           inputResources:
-            - name: vinay_github 
+            - name: myAppRepo
         execution:
           onExecute:
             - echo $MY_MESSAGE
@@ -17,9 +17,9 @@ pipelines:
             - add_run_variables current_runid=$run_id
             - echo Previous run ID is $prev_runid
             - echo Current run ID is $current_runid
-            - echo $res_vinay_github_resourcePath
-            - echo $res_vinay_github_gitProvider_name
-            - echo $res_vinay_github_commitSha
+            - echo $res_myAppRepo_resourcePath
+            - echo $res_myAppRepo_gitProvider_name
+            - echo $res_myAppRepo_commitSha
  
       - name: step_2
         type: Bash
@@ -53,3 +53,4 @@ pipelines:
             - echo "Running $pipeline_name | $step_name on node ID $step_node_id"
             - add_pipeline_variables prev_runid=$run_id           
             - echo $current_runid Completed
+
