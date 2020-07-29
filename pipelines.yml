@@ -6,39 +6,38 @@ resources:
       path: vinayagg/jfrogPipelinesSteps      # Change to your repo
 pipelines:
   - name: pull gcloud docker image
-    configuration:
-      runtime:      
-        type: image
-        image:
-          custom:
-            name: google/cloud-sdk
-            tag: latest
-            options: "-e HOME=/root"
-  - name: test hello world docker image
-    steps:
-      - name: install utils needed by JFrog pipelines
-        type: Bash
-        configuration:
-          runtime:
-            type: image
-            image: google/cloud-sdk
-        execution:
-          onStart:
-            - echo "Installing missing utils needed by JFrog pipelines"
-          onExecute:
-            - sudo apt-get install jq gettext -y
-          onComplete:
-            - echo "Installation complete."
-      - name: check gcloud cli version
-        type: Bash
-        configuration:
-          runtime:
-            type: image
-            image: google/cloud-sdk
-        execution:
-          onStart:
-            - echo "Printing gcloud version ..."
-          onExecute:
-            - gcloud version
-          onComplete:
-            - echo "Checking gcloud version complete."
+  steps:
+    - name: Download gcloud docker image
+      type: Bash
+      configuration:
+        runtime:      
+          type: image
+          image:
+            custom:
+              name: google/cloud-sdk
+              tag: latest
+              options: "-e HOME=/root"
+      execution:
+        onStart:
+          - echo "Installing missing utils needed by JFrog pipelines"
+        onExecute:
+          - sudo apt-get install jq gettext -y
+        onComplete:
+          - echo "Installation complete."
+    - name: check gcloud cli version
+      type: Bash
+      configuration:
+        runtime:      
+          type: image
+          image:
+            custom:
+              name: google/cloud-sdk
+              tag: latest
+              options: "-e HOME=/root"
+      execution:
+        onStart:
+          - echo "Printing gcloud version ..."
+        onExecute:
+          - gcloud version
+        onComplete:
+          - echo "Checking gcloud version complete."
