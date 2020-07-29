@@ -4,6 +4,12 @@ resources:
     configuration:
       gitProvider: vinay_github               # Change to your integration
       path: vinayagg/jfrogPipelinesSteps      # Change to your repo
+      environmentVariables:
+        readOnly:
+          SERVICE_ACCOUNT_JSON: ''
+          GKE_ZONE: ''
+          GKE_PROJECT: ''
+          GKE_CLUSTER: ''
 pipelines:
   - name: run_gcloud_cli_docker_image
     steps:
@@ -32,14 +38,8 @@ pipelines:
           onStart:
             - echo "Authorizing access to GKE by service account json file..."
           onExecute:
-            - OUT=$(gcloud auth activate-service-account --key-file=$SERVICE_ACCOUNT_JSON 2>&1)
-              echo "$OUT"
-              if [[ "$OUT" =~ (ERROR) ]]
-              then
-                failure_response
-                exit 1
-              fi
-              OUT=$(gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $GKE_PROJECT 2>&1)
-              echo "$OUT"
+            - echo $SERVICE_ACCOUNT_JSON >> ./gcloud.serviceaccount.json
+            - gcloud auth activate-service-account --key-file=gcloud.serviceaccount.json
+            #- gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $GKE_PROJECT
           onComplete:
             - echo "gcloud login end"
