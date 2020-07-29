@@ -32,7 +32,8 @@ pipelines:
           onStart:
             - echo "Authorizing access to GKE by service account json file..."
           onExecute:
-            - echo $SERVICE_ACCOUNT_JSON >> ./gcloud.serviceaccount.json
+            - echo $SERVICE_ACCOUNT_JSON
+            - echo $SERVICE_ACCOUNT_JSON > ./gcloud.serviceaccount.json
             - ls -l
             - cat ./gcloud.serviceaccount.json
             - gcloud auth activate-service-account --key-file=gcloud.serviceaccount.json
