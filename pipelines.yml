@@ -6,6 +6,10 @@ resources:
       path: vinayagg/jfrogPipelinesSteps      # Change to your repo
 pipelines:
   - name: run_gcloud_cli_docker_image
+    configuration:
+      environmentVariables:
+        readOnly:
+          gcloud_version: 'latest'
     steps:
       - name: download_gcloud_docker_image
         type: Bash
@@ -15,7 +19,7 @@ pipelines:
             image:
               custom:
                 name: google/cloud-sdk
-                tag: latest
+                tag: $gcloud_version
                 options: "-e HOME=/root"
         execution:
           onStart:
