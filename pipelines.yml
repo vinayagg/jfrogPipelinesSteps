@@ -21,7 +21,7 @@ pipelines:
           onStart:
             - echo "Installing missing utils needed by JFrog pipelines"
           onExecute:
-            - sudo apt-get install jq gettext -y
+            - apt-get install jq gettext -y
           onComplete:
             - echo "Installation complete."
       - name: check_gcloud_cli_version
