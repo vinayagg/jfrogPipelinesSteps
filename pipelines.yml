@@ -14,29 +14,30 @@ pipelines:
 #          GKE_PROJECT: ''
 #          GKE_CLUSTER: ''
     steps:
-      - name: check_gcloud_cli_docker_image_tag
-        type: Bash
-        execution:
-          onStart:
-            - echo "Printing gcloud version ..."
-          onExecute:
-            - gcloud version
-          onComplete:
-            - echo "Checking gcloud version complete."
       - name: gcloud_login
         type: Bash
-        configuration:
-          inputSteps:
-            - name: check_gcloud_cli_docker_image_tag
         execution:
           onStart:
             - echo "Authorizing access to GKE by service account json file..."
           onExecute:
+            - gcloud version
             - echo $SERVICE_ACCOUNT_JSON
             - echo $SERVICE_ACCOUNT_JSON > ./gcloud.serviceaccount.json
-            - ls -l
+            - ls -la
             - cat ./gcloud.serviceaccount.json
             - gcloud auth activate-service-account --key-file=gcloud.serviceaccount.json
             #- gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $GKE_PROJECT
           onComplete:
             - echo "gcloud login end"
+      # - name: check_gcloud_cli_docker_image_tag
+      #   type: Bash
+      #   configuration:
+      #     inputSteps:
+      #       - name: gcloud_login
+      #   execution:
+      #     onStart:
+      #       - echo "Printing gcloud version ..."
+      #     onExecute:
+      #       - gcloud version
+      #     onComplete:
+      #       - echo "Checking gcloud version complete."
