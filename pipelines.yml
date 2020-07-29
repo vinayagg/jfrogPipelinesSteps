@@ -6,40 +6,9 @@ resources:
       path: vinayagg/jfrogPipelinesSteps      # Change to your repo
 pipelines:
   - name: run_gcloud_cli_docker_image
-    configuration:
-      environmentVariables:
-        readOnly:
-          gcloud_version: 'latest'
     steps:
-      - name: download_gcloud_docker_image
+      - name: check_gcloud_cli_docker_image_tag
         type: Bash
-        configuration:
-          runtime:      
-            type: image
-            image:
-              custom:
-                name: google/cloud-sdk
-                tag: $gcloud_version
-                options: "-e HOME=/root"
-        execution:
-          onStart:
-            - echo "Installing missing utils needed by JFrog pipelines"
-          onExecute:
-            - apt-get install jq gettext -y
-          onComplete:
-            - echo "Installation complete."
-      - name: check_gcloud_cli_version
-        type: Bash
-        configuration:
-          runtime:      
-            type: image
-            image:
-              custom:
-                name: google/cloud-sdk
-                tag: $gcloud_version
-                options: "-e HOME=/root"
-          inputSteps:
-            - name: download_gcloud_docker_image
         execution:
           onStart:
             - echo "Printing gcloud version ..."
@@ -47,44 +16,6 @@ pipelines:
             - gcloud version
           onComplete:
             - echo "Checking gcloud version complete."
-      - name: gettext
-        type: Bash
-        configuration:
-          runtime:      
-            type: image
-            image:
-              custom:
-                name: google/cloud-sdk
-                tag: $gcloud_version
-                options: "-e HOME=/root"
-          inputSteps:
-            - name: check_gcloud_cli_version
-        execution:
-          onStart:
-            - echo "gettext start ..."
-          onExecute:
-            - gettext
-          onComplete:
-            - echo "gettext start ..."
-      - name: jq
-        type: Bash
-        configuration:
-          runtime:      
-            type: image
-            image:
-              custom:
-                name: google/cloud-sdk
-                tag: $gcloud_version
-                options: "-e HOME=/root"
-          inputSteps:
-            - name: download_gcloud_docker_image
-        execution:
-          onStart:
-            - echo "jq start ..."
-          onExecute:
-            - jq
-          onComplete:
-            - echo "jq start ..."
       - name: gcloud_login
         type: Bash
         configuration:
@@ -93,14 +24,22 @@ pipelines:
             image:
               custom:
                 name: google/cloud-sdk
-                tag: $gcloud_version
+                tag: $gcloud_cli_docker_image_tag
                 options: "-e HOME=/root"
           inputSteps:
-            - name: gettext
+            - name: jq
         execution:
           onStart:
-            - echo "jq start ..."
+            - echo "Authorizing access to GKE by service account json file..."
           onExecute:
-            - jq
+            - OUT=$(gcloud auth activate-service-account --key-file=$SERVICE_ACCOUNT_JSON 2>&1)
+              echo "$OUT"
+              if [[ "$OUT" =~ (ERROR) ]]
+              then
+                failure_response
+                exit 1
+              fi
+              OUT=$(gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $GKE_PROJECT 2>&1)
+              echo "$OUT"
           onComplete:
-            - echo "jq start ..."
+            - echo "gcloud login end"
