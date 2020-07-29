@@ -26,13 +26,6 @@ pipelines:
       - name: gcloud_login
         type: Bash
         configuration:
-          runtime:      
-            type: image
-            image:
-              custom:
-                name: google/cloud-sdk
-                tag: $gcloud_cli_docker_image_tag
-                options: "-e HOME=/root"
           inputSteps:
             - name: check_gcloud_cli_docker_image_tag
         execution:
@@ -40,6 +33,8 @@ pipelines:
             - echo "Authorizing access to GKE by service account json file..."
           onExecute:
             - echo $SERVICE_ACCOUNT_JSON >> ./gcloud.serviceaccount.json
+            - ls -l
+            - cat ./gcloud.serviceaccount.json
             - gcloud auth activate-service-account --key-file=gcloud.serviceaccount.json
             #- gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $GKE_PROJECT
           onComplete:
