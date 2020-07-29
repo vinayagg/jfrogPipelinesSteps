@@ -5,58 +5,40 @@ resources:
       gitProvider: vinay_github               # Change to your integration
       path: vinayagg/jfrogPipelinesSteps      # Change to your repo
 pipelines:
-  - name: pipeline_hello_world
+  - name: pull gcloud docker image
     configuration:
-      environmentVariables:
-        readOnly:
-          MY_MESSAGE: '"Hello World!"'
+      runtime:      
+        type: image
+        image:
+          custom:
+            name: google/cloud-sdk
+            tag: latest
+            options: "-e HOME=/root"
+  - name: test hello world docker image
     steps:
-      - name: step_1
+      - name: install utils needed by JFrog pipelines
         type: Bash
         configuration:
-          inputResources:
-            - name: myAppRepo
+          runtime:
+            type: image
+            image: google/cloud-sdk
         execution:
+          onStart:
+            - echo "Installing missing utils needed by JFrog pipelines"
           onExecute:
-            - echo $MY_MESSAGE
-            - echo "Running $pipeline_name | $step_name on node ID $step_node_id"
-            - add_run_variables current_runid=$run_id
-            - echo Previous run ID is $prev_runid
-            - echo Current run ID is $current_runid
-            - echo $res_myAppRepo_resourcePath
-            - echo $res_myAppRepo_gitProvider_name
-            - echo $res_myAppRepo_commitSha
- 
-      - name: step_2
+            - sudo apt-get install jq gettext -y
+          onComplete:
+            - echo "Installation complete."
+      - name: check gcloud cli version
         type: Bash
         configuration:
-          inputSteps:
-            - name: step_1
+          runtime:
+            type: image
+            image: google/cloud-sdk
         execution:
+          onStart:
+            - echo "Printing gcloud version ..."
           onExecute:
-            - echo $MY_MESSAGE
-            - echo "Running $pipeline_name | $step_name on node ID $step_node_id"
- 
-      - name: step_3
-        type: Bash
-        configuration:
-          inputSteps:
-            - name: step_1
-        execution:
-          onExecute:
-            - echo $MY_MESSAGE
-            - echo "Running $pipeline_name | $step_name on node ID $step_node_id"
- 
-      - name: step_4
-        type: Bash
-        configuration:
-          inputSteps:
-            - name: step_2
-            - name: step_3
-        execution:
-          onExecute:
-            - echo $MY_MESSAGE
-            - echo "Running $pipeline_name | $step_name on node ID $step_node_id"
-            - add_pipeline_variables prev_runid=$run_id           
-            - echo $current_runid Completed
-
+            - gcloud version
+          onComplete:
+            - echo "Checking gcloud version complete."
