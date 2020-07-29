@@ -36,7 +36,7 @@ pipelines:
             image:
               custom:
                 name: google/cloud-sdk
-                tag: latest
+                tag: $gcloud_version
                 options: "-e HOME=/root"
           inputSteps:
             - name: download_gcloud_docker_image
@@ -47,3 +47,60 @@ pipelines:
             - gcloud version
           onComplete:
             - echo "Checking gcloud version complete."
+      - name: gettext
+        type: Bash
+        configuration:
+          runtime:      
+            type: image
+            image:
+              custom:
+                name: google/cloud-sdk
+                tag: $gcloud_version
+                options: "-e HOME=/root"
+          inputSteps:
+            - name: check_gcloud_cli_version
+        execution:
+          onStart:
+            - echo "gettext start ..."
+          onExecute:
+            - gettext
+          onComplete:
+            - echo "gettext start ..."
+      - name: jq
+        type: Bash
+        configuration:
+          runtime:      
+            type: image
+            image:
+              custom:
+                name: google/cloud-sdk
+                tag: $gcloud_version
+                options: "-e HOME=/root"
+          inputSteps:
+            - name: download_gcloud_docker_image
+        execution:
+          onStart:
+            - echo "jq start ..."
+          onExecute:
+            - jq
+          onComplete:
+            - echo "jq start ..."
+      - name: gcloud_login
+        type: Bash
+        configuration:
+          runtime:      
+            type: image
+            image:
+              custom:
+                name: google/cloud-sdk
+                tag: $gcloud_version
+                options: "-e HOME=/root"
+          inputSteps:
+            - name: gettext
+        execution:
+          onStart:
+            - echo "jq start ..."
+          onExecute:
+            - jq
+          onComplete:
+            - echo "jq start ..."
