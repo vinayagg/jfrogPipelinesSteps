@@ -27,7 +27,7 @@ pipelines:
                 tag: $gcloud_cli_docker_image_tag
                 options: "-e HOME=/root"
           inputSteps:
-            - name: jq
+            - name: check_gcloud_cli_docker_image_tag
         execution:
           onStart:
             - echo "Authorizing access to GKE by service account json file..."
