@@ -4,14 +4,15 @@ resources:
     configuration:
       gitProvider: vinay_github               # Change to your integration
       path: vinayagg/jfrogPipelinesSteps      # Change to your repo
+pipelines:
+  - name: run_gcloud_cli_docker_image
+    configuration:
       environmentVariables:
         readOnly:
           SERVICE_ACCOUNT_JSON: ''
-          GKE_ZONE: ''
-          GKE_PROJECT: ''
-          GKE_CLUSTER: ''
-pipelines:
-  - name: run_gcloud_cli_docker_image
+#          GKE_ZONE: ''
+#          GKE_PROJECT: ''
+#          GKE_CLUSTER: ''
     steps:
       - name: check_gcloud_cli_docker_image_tag
         type: Bash
