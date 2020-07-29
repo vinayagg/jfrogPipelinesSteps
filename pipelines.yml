@@ -5,16 +5,16 @@ resources:
       gitProvider: vinay_github               # Change to your integration
       path: vinayagg/jfrogPipelinesSteps      # Change to your repo
 pipelines:
-  - name: pull gcloud docker image
+  - name: run_gcloud_cli_docker_image
     steps:
-      - name: step1
+      - name: download_gcloud_docker_image
         type: Bash
         configuration:
           runtime:      
             type: image
             image:
               custom:
-                name: cloud-sdk
+                name: google/cloud-sdk
                 tag: latest
                 options: "-e HOME=/root"
         execution:
@@ -24,18 +24,18 @@ pipelines:
             - sudo apt-get install jq gettext -y
           onComplete:
             - echo "Installation complete."
-      - name: step2
+      - name: check_gcloud_cli_version
         type: Bash
         configuration:
           runtime:      
             type: image
             image:
               custom:
-                name: cloud-sdk
+                name: google/cloud-sdk
                 tag: latest
                 options: "-e HOME=/root"
           inputSteps:
-            - name: step1
+            - name: download_gcloud_docker_image
         execution:
           onStart:
             - echo "Printing gcloud version ..."
