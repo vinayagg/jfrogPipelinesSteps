@@ -7,7 +7,7 @@ resources:
 pipelines:
   - name: pull gcloud docker image
     steps:
-      - name: Download gcloud docker image
+      - name: download_gcloud_docker_image
         type: Bash
         configuration:
           runtime:      
@@ -24,7 +24,7 @@ pipelines:
             - sudo apt-get install jq gettext -y
           onComplete:
             - echo "Installation complete."
-      - name: check gcloud cli version
+      - name: check_gcloud_cli_version
         type: Bash
         configuration:
           runtime:      
@@ -34,6 +34,8 @@ pipelines:
                 name: google/cloud-sdk
                 tag: latest
                 options: "-e HOME=/root"
+          inputSteps:
+            - name: download_gcloud_docker_image
         execution:
           onStart:
             - echo "Printing gcloud version ..."
